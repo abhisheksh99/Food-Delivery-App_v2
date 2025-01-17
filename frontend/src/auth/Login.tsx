@@ -2,7 +2,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
-import { LoginInputState } from "@/schema/userSchema";
+import { LoginInputState, userLoginSchema } from "@/schema/userSchema";
 import { Loader2, Lock, Mail } from "lucide-react";
 import { FormEvent, ChangeEvent, useState } from "react";
 import { Link } from "react-router-dom";
@@ -13,6 +13,8 @@ const Login = () => {
     password: "",
   });
 
+  const [errors, setErrors] = useState<Partial<LoginInputState>>({});
+
   const changeEventHandler = (e: ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setInput({ ...input, [name]: value });
@@ -20,10 +22,24 @@ const Login = () => {
 
   const loginSubmitHandler = (e: FormEvent) => {
     e.preventDefault();
-    console.log(input);
+
+    // Form validation logic using Zod
+    const result = userLoginSchema.safeParse(input);
+    if (!result.success) {
+      const fieldErrors = result.error.formErrors.fieldErrors;
+      setErrors(fieldErrors as Partial<LoginInputState>);
+      return;
+    }
+
+    // Clear errors on successful validation
+    setErrors({});
+
+    // Placeholder for API logic
+    console.log("Validated Input:", input);
   };
 
   const loading = false;
+
   return (
     <div className="flex items-center justify-center min-h-screen">
       <form
@@ -33,6 +49,8 @@ const Login = () => {
         <div className="mb-4">
           <h1 className="font-bold text-2xl text-center">Flavour Fiesta</h1>
         </div>
+
+        {/* Email Field */}
         <div className="mb-2">
           <div className="relative">
             <Label>Email</Label>
@@ -45,8 +63,13 @@ const Login = () => {
               placeholder="Enter your email"
             />
             <Mail className="absolute inset-y-7 left-2 text-gray-500 pointer-events-none" />
+            {errors.email && (
+              <span className="text-sm text-red-500">{errors.email}</span>
+            )}
           </div>
         </div>
+
+        {/* Password Field */}
         <div className="mb-2">
           <div className="relative">
             <Label>Password</Label>
@@ -59,8 +82,13 @@ const Login = () => {
               placeholder="Enter your password"
             />
             <Lock className="absolute inset-y-7 left-2 text-gray-500 pointer-events-none" />
+            {errors.password && (
+              <span className="text-sm text-red-500">{errors.password}</span>
+            )}
           </div>
         </div>
+
+        {/* Submit Button */}
         <div className="mb-10">
           {loading ? (
             <Button disabled type="submit" className="w-full bg-orange hover:bg-hoverOrange">
@@ -73,7 +101,10 @@ const Login = () => {
             </Button>
           )}
         </div>
+
         <Separator />
+
+        {/* Signup Link */}
         <p className="mt-2 text-center">
           Don't have an account?{" "}
           <Link to="/signup" className="text-blue-500">

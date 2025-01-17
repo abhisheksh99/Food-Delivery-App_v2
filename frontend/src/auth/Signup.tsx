@@ -2,7 +2,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
-import { SignupInputState } from "@/schema/userSchema";
+import { SignupInputState, userSignupSchema } from "@/schema/userSchema";
 import { Loader2, Lock, Mail, User, Phone } from "lucide-react";
 import { FormEvent, ChangeEvent, useState } from "react";
 import { Link } from "react-router-dom";
@@ -14,6 +14,7 @@ const Signup = () => {
     password: "",
     contact: "",
   });
+  const [errors, setErrors] = useState<Partial<SignupInputState>>({});
 
   const changeEventHandler = (e: ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -22,10 +23,24 @@ const Signup = () => {
 
   const signupSubmitHandler = (e: FormEvent) => {
     e.preventDefault();
-    console.log(input);
+
+    // Form validation using Zod
+    const result = userSignupSchema.safeParse(input);
+    if (!result.success) {
+      const fieldErrors = result.error.formErrors.fieldErrors;
+      setErrors(fieldErrors as Partial<SignupInputState>);
+      return;
+    }
+
+    // Clear errors on successful validation
+    setErrors({});
+
+    // API Implementation Placeholder
+    console.log("Validated Input:", input);
   };
 
   const loading = false;
+
   return (
     <div className="flex items-center justify-center min-h-screen">
       <form
@@ -35,6 +50,8 @@ const Signup = () => {
         <div className="mb-4">
           <h1 className="font-bold text-2xl text-center">Flavour Fiesta</h1>
         </div>
+
+        {/* Full Name Field */}
         <div className="mb-2">
           <div className="relative">
             <Label>Full Name</Label>
@@ -47,8 +64,13 @@ const Signup = () => {
               placeholder="Enter your full name"
             />
             <User className="absolute inset-y-7 left-2 text-gray-500 pointer-events-none" />
+            {errors.fullname && (
+              <span className="text-sm text-red-500">{errors.fullname}</span>
+            )}
           </div>
         </div>
+
+        {/* Email Field */}
         <div className="mb-2">
           <div className="relative">
             <Label>Email</Label>
@@ -61,8 +83,13 @@ const Signup = () => {
               placeholder="Enter your email"
             />
             <Mail className="absolute inset-y-7 left-2 text-gray-500 pointer-events-none" />
+            {errors.email && (
+              <span className="text-sm text-red-500">{errors.email}</span>
+            )}
           </div>
         </div>
+
+        {/* Contact Field */}
         <div className="mb-2">
           <div className="relative">
             <Label>Contact Number</Label>
@@ -75,8 +102,13 @@ const Signup = () => {
               placeholder="Enter your phone number"
             />
             <Phone className="absolute inset-y-7 left-2 text-gray-500 pointer-events-none" />
+            {errors.contact && (
+              <span className="text-sm text-red-500">{errors.contact}</span>
+            )}
           </div>
         </div>
+
+        {/* Password Field */}
         <div className="mb-2">
           <div className="relative">
             <Label>Password</Label>
@@ -89,20 +121,33 @@ const Signup = () => {
               placeholder="Enter your password"
             />
             <Lock className="absolute inset-y-7 left-2 text-gray-500 pointer-events-none" />
+            {errors.password && (
+              <span className="text-sm text-red-500">{errors.password}</span>
+            )}
           </div>
         </div>
+
+        {/* Submit Button */}
         <div className="mb-10">
           {loading ? (
-            <Button disabled type="submit" className="w-full bg-orange hover:bg-hoverOrange">
+            <Button
+              disabled
+              type="submit"
+              className="w-full bg-orange hover:bg-hoverOrange"
+            >
               <Loader2 className="mr-2 h-4 w-4 animate-spin" />
               Please wait
             </Button>
           ) : (
-            <Button type="submit" className="w-full bg-orange hover:bg-hoverOrange">
+            <Button
+              type="submit"
+              className="w-full bg-orange hover:bg-hoverOrange"
+            >
               Signup
             </Button>
           )}
         </div>
+
         <Separator />
         <p className="mt-2 text-center">
           Already have an account?{" "}
