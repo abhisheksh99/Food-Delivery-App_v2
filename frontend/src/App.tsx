@@ -5,13 +5,16 @@ import Signup from "./auth/Signup";
 import ForgotPassword from "./auth/ForgotPassword";
 import ResetPassword from "./auth/ResetPassword";
 import VerifyEmail from "./auth/VerifyEmail";
+import HeroSection from "./components/HeroSection";
 
 function App() {
   return (
     <>
 
     <Routes>
-      <Route path="/" element={<MainLayout/>} />
+      <Route path="/" element={<MainLayout/>}>
+      <Route index={true} element={<HeroSection />} />
+      </Route>
       <Route path="/login" element={<Login />} />
       <Route path="/signup" element={<Signup />} />
       <Route path="/forgot-password" element={<ForgotPassword/>} />
