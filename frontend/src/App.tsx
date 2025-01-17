@@ -6,6 +6,7 @@ import ForgotPassword from "./auth/ForgotPassword";
 import ResetPassword from "./auth/ResetPassword";
 import VerifyEmail from "./auth/VerifyEmail";
 import HeroSection from "./components/HeroSection";
+import Profile from "./components/Profile";
 
 function App() {
   return (
@@ -14,6 +15,7 @@ function App() {
     <Routes>
       <Route path="/" element={<MainLayout/>}>
       <Route index={true} element={<HeroSection />} />
+      <Route path="/profile" element={<Profile />} />
       </Route>
       <Route path="/login" element={<Login />} />
       <Route path="/signup" element={<Signup />} />
