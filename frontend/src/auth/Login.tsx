@@ -91,15 +91,30 @@ const Login = () => {
         {/* Submit Button */}
         <div className="mb-10">
           {loading ? (
-            <Button disabled type="submit" className="w-full bg-orange hover:bg-hoverOrange">
+            <Button
+              disabled
+              type="submit"
+              className="w-full bg-orange hover:bg-hoverOrange"
+            >
               <Loader2 className="mr-2 h-4 w-4 animate-spin" />
               Please wait
             </Button>
           ) : (
-            <Button type="submit" className="w-full bg-orange hover:bg-hoverOrange">
+            <Button
+              type="submit"
+              className="w-full bg-orange hover:bg-hoverOrange"
+            >
               Login
             </Button>
           )}
+          <div className="mt-4 text-center">
+            <Link
+              to="/forgot-password"
+              className="hover:text-blue-500 hover:underline"
+            >
+              Forgot Password
+            </Link>
+          </div>
         </div>
 
         <Separator />
