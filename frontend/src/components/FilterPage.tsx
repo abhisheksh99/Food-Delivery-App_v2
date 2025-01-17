@@ -10,7 +10,7 @@ export type FilterOptionsState = {
 
 const filterOptions: FilterOptionsState[] = [
   { id: "burger", label: "Burger" },
-  { id: "chicken", label: "chicken" },
+  { id: "chicken", label: "Chicken" },
   { id: "biryani", label: "Biryani" },
   { id: "momos", label: "Momos" },
 ];

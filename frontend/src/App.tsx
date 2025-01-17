@@ -8,6 +8,8 @@ import VerifyEmail from "./auth/VerifyEmail";
 import HeroSection from "./components/HeroSection";
 import Profile from "./components/Profile";
 import SearchPage from "./components/SearchPage";
+import RestaurantDetails from "./components/RestaurantDetails";
+
 
 function App() {
   return (
@@ -18,6 +20,7 @@ function App() {
       <Route index={true} element={<HeroSection />} />
       <Route path="/profile" element={<Profile />} />
       <Route path="/search/:text" element={<SearchPage />} />
+      <Route path="/restaurant/:id" element={<RestaurantDetails />} />
       </Route>
       <Route path="/login" element={<Login />} />
       <Route path="/signup" element={<Signup />} />
