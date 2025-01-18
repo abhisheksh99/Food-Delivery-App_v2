@@ -4,6 +4,7 @@ import cors from "cors";
 import cookieParser from "cookie-parser";
 import connectDb from "./db/connectDb";
 import userRoutes from "./routes/userRoute";
+import bodyParser from "body-parser";
 
 // Load environment variables
 dotenv.config();
@@ -15,6 +16,7 @@ const app: Application = express();
 connectDb();
 
 // Middleware
+app.use(bodyParser.json({ limit: '10mb' }));
 app.use(cookieParser());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
