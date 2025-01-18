@@ -11,6 +11,7 @@ import SearchPage from "./components/SearchPage";
 import RestaurantDetails from "./components/RestaurantDetails";
 import Cart from "./components/Cart";
 import Restaurant from "./admin/Restaurant";
+import AddMenu from "./admin/AddMenu";
 
 function App() {
   return (
@@ -25,6 +26,7 @@ function App() {
 
         {/* Admin */}
           <Route path="/admin/restaurant" element={<Restaurant />} />
+          <Route path="/admin/menu" element={<AddMenu />} />
         </Route>
         {/* Common */}
         <Route path="/login" element={<Login />} />
