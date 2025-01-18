@@ -25,7 +25,7 @@ function App() {
           <Route path="/search/:text" element={<SearchPage />} />
           <Route path="/restaurant/:id" element={<RestaurantDetails />} />
           <Route path="/cart" element={<Cart />} />
-          <Route path="/order" element={<Order />} />
+          <Route path="/order/status" element={<Order />} />
 
         {/* Admin */}
           <Route path="/admin/restaurant" element={<Restaurant />} />
