@@ -1,6 +1,6 @@
 import mongoose, { Document } from "mongoose";
 
-interface IRestaurant extends Document {
+export interface IRestaurant extends Document {
   user: mongoose.Schema.Types.ObjectId;
   restaurantName: string;
   city: string;
