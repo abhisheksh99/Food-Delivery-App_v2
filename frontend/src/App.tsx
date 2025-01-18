@@ -12,6 +12,8 @@ import RestaurantDetails from "./components/RestaurantDetails";
 import Cart from "./components/Cart";
 import Restaurant from "./admin/Restaurant";
 import AddMenu from "./admin/AddMenu";
+import Orders from "./admin/Orders";
+import Order from "./components/Order";
 
 function App() {
   return (
@@ -23,10 +25,12 @@ function App() {
           <Route path="/search/:text" element={<SearchPage />} />
           <Route path="/restaurant/:id" element={<RestaurantDetails />} />
           <Route path="/cart" element={<Cart />} />
+          <Route path="/order" element={<Order />} />
 
         {/* Admin */}
           <Route path="/admin/restaurant" element={<Restaurant />} />
           <Route path="/admin/menu" element={<AddMenu />} />
+          <Route path="/admin/orders" element={<Orders />} />
         </Route>
         {/* Common */}
         <Route path="/login" element={<Login />} />
