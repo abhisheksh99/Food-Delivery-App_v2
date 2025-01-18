@@ -1,8 +1,8 @@
-import express, { Application} from "express";
+import express, { Application } from "express";
 import dotenv from "dotenv";
 import cors from "cors";
 import cookieParser from "cookie-parser";
-
+import connectDb from "./db/connectDb";
 
 // Load environment variables
 dotenv.config();
@@ -10,6 +10,8 @@ dotenv.config();
 // Initialize express
 const app: Application = express();
 
+//Database connection
+connectDb();
 
 // Middleware
 app.use(cookieParser());
@@ -22,15 +24,8 @@ app.use(
   })
 );
 
-
-
-
-
 // Server
 const PORT = process.env.PORT || 3000;
-
-
-
 
 app.listen(PORT, () => {
   console.log(`🚀 Server is running on port ${PORT}`);
