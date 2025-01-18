@@ -1,11 +1,16 @@
-import { Request, Response } from 'express';
-import User from '../models/userModel';
-import bcrypt from 'bcryptjs';
+import { Request, Response } from "express";
+import User from "../models/userModel";
+import bcrypt from "bcryptjs";
 import crypto from "crypto";
-import cloudinary from '../utils/cloudinary';
-import { generateToken } from '../utils/generateToken';
-import { sendPasswordResetEmail, sendResetSuccessEmail, sendVerificationEmail, sendWelcomeEmail } from "../mailtrap/email";
-import { generateVerificationCode } from '../utils/generateVerificationToken';
+import cloudinary from "../utils/cloudinary";
+import { generateToken } from "../utils/generateToken";
+import {
+  sendPasswordResetEmail,
+  sendResetSuccessEmail,
+  sendVerificationEmail,
+  sendWelcomeEmail,
+} from "../mailtrap/email";
+import { generateVerificationCode } from "../utils/generateVerificationToken";
 
 // Controller for user signup
 export const signup = async (req: Request, res: Response) => {
@@ -44,7 +49,9 @@ export const signup = async (req: Request, res: Response) => {
     await sendVerificationEmail(email, verificationToken);
 
     // Fetch the user without the password field
-    const userWithoutPassword = await User.findOne({ email }).select("-password");
+    const userWithoutPassword = await User.findOne({ email }).select(
+      "-password"
+    );
 
     res.status(201).json({
       success: true,
@@ -52,7 +59,9 @@ export const signup = async (req: Request, res: Response) => {
       user: userWithoutPassword,
     });
   } catch (error) {
-    res.status(500).json({ success: false, message: "Server error", error });
+    res
+      .status(500)
+      .json({ success: false, message: "Internal Server Error", error });
   }
 };
 
@@ -87,7 +96,9 @@ export const login = async (req: Request, res: Response) => {
     await user.save();
 
     // Fetch the user without the password field
-    const userWithoutPassword = await User.findOne({ email }).select("-password");
+    const userWithoutPassword = await User.findOne({ email }).select(
+      "-password"
+    );
 
     return res.status(200).json({
       success: true,
@@ -95,7 +106,9 @@ export const login = async (req: Request, res: Response) => {
       user: userWithoutPassword,
     });
   } catch (error) {
-    res.status(500).json({ success: false, message: "Server error", error });
+    res
+      .status(500)
+      .json({ success: false, message: "Internal Server Error", error });
   }
 };
 
@@ -132,7 +145,9 @@ export const verifyEmail = async (req: Request, res: Response) => {
       user,
     });
   } catch (error) {
-    res.status(500).json({ success: false, message: "Server error", error });
+    res
+      .status(500)
+      .json({ success: false, message: "Internal Server Error", error });
   }
 };
 
@@ -145,7 +160,9 @@ export const logout = async (req: Request, res: Response) => {
       message: "Logged out successfully.",
     });
   } catch (error) {
-    res.status(500).json({ success: false, message: "Server error", error });
+    res
+      .status(500)
+      .json({ success: false, message: "Internal Server Error", error });
   }
 };
 
@@ -171,14 +188,19 @@ export const forgotPassword = async (req: Request, res: Response) => {
     await user.save();
 
     // Send a password reset email
-    await sendPasswordResetEmail(user.email, `${process.env.FRONTEND_URL}/resetpassword/${resetToken}`);
+    await sendPasswordResetEmail(
+      user.email,
+      `${process.env.FRONTEND_URL}/resetpassword/${resetToken}`
+    );
 
     return res.status(200).json({
       success: true,
       message: "Password reset link sent to your email",
     });
   } catch (error) {
-    res.status(500).json({ success: false, message: "Server error", error });
+    res
+      .status(500)
+      .json({ success: false, message: "Internal Server Error", error });
   }
 };
 
@@ -216,7 +238,9 @@ export const resetPassword = async (req: Request, res: Response) => {
       message: "Password reset successfully.",
     });
   } catch (error) {
-    res.status(500).json({ success: false, message: "Server error", error });
+    res
+      .status(500)
+      .json({ success: false, message: "Internal Server Error", error });
   }
 };
 
@@ -230,7 +254,7 @@ export const checkAuth = async (req: Request, res: Response) => {
     if (!user) {
       return res.status(404).json({
         success: false,
-        message: 'User not found',
+        message: "User not found",
       });
     }
 
@@ -239,7 +263,9 @@ export const checkAuth = async (req: Request, res: Response) => {
       user,
     });
   } catch (error) {
-    res.status(500).json({ success: false, message: "Server error", error });
+    res
+      .status(500)
+      .json({ success: false, message: "Internal Server Error", error });
   }
 };
 
@@ -247,7 +273,8 @@ export const checkAuth = async (req: Request, res: Response) => {
 export const updateProfile = async (req: Request, res: Response) => {
   try {
     const userId = req.id;
-    const { fullname, email, address, city, country, profilePicture } = req.body;
+    const { fullname, email, address, city, country, profilePicture } =
+      req.body;
 
     // Ensure the profile picture is provided
     if (!profilePicture) {
@@ -261,10 +288,19 @@ export const updateProfile = async (req: Request, res: Response) => {
     const cloudResponse = await cloudinary.uploader.upload(profilePicture);
 
     // Prepare updated user data
-    const updatedData = { fullname, email, address, city, country, profilePicture: cloudResponse.url };
+    const updatedData = {
+      fullname,
+      email,
+      address,
+      city,
+      country,
+      profilePicture: cloudResponse.url,
+    };
 
     // Update the user in the database and fetch the updated record
-    const user = await User.findByIdAndUpdate(userId, updatedData, { new: true }).select("-password");
+    const user = await User.findByIdAndUpdate(userId, updatedData, {
+      new: true,
+    }).select("-password");
 
     return res.status(200).json({
       success: true,
@@ -272,6 +308,8 @@ export const updateProfile = async (req: Request, res: Response) => {
       message: "Profile updated successfully",
     });
   } catch (error) {
-    res.status(500).json({ success: false, message: "Server error", error });
+    res
+      .status(500)
+      .json({ success: false, message: "Internal Server Error", error });
   }
 };

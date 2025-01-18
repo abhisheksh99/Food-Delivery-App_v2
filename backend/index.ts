@@ -3,8 +3,10 @@ import dotenv from "dotenv";
 import cors from "cors";
 import cookieParser from "cookie-parser";
 import connectDb from "./db/connectDb";
-import userRoutes from "./routes/userRoute";
+
 import bodyParser from "body-parser";
+import userRoutes from "./routes/userRoute";
+import restaurantRoutes from "./routes/restaurantRoute";
 
 // Load environment variables
 dotenv.config();
@@ -16,7 +18,7 @@ const app: Application = express();
 connectDb();
 
 // Middleware
-app.use(bodyParser.json({ limit: '10mb' }));
+app.use(bodyParser.json({ limit: "10mb" }));
 app.use(cookieParser());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
@@ -29,7 +31,7 @@ app.use(
 
 // Routes
 app.use("/api/v1/user", userRoutes);
-
+app.use("/api/v1/restaurant", restaurantRoutes);
 
 // Server
 const PORT = process.env.PORT || 3000;
