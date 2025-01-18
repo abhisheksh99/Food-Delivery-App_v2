@@ -1,7 +1,9 @@
+import { useNavigate } from "react-router-dom";
 import { Button } from "./ui/button";
 import { Card, CardContent, CardFooter } from "./ui/card";
 
 const AvailableMenu = () => {
+  const navigate = useNavigate();
   return (
     <div className="md:p-4">
       <h1 className="text-xl md:text-2xl font-extrabold mb-6">
@@ -22,7 +24,8 @@ const AvailableMenu = () => {
             <CardFooter className="p-4">
               <Button
                 onClick={() => {
-                 
+
+                  navigate("/cart");
                 }}
                 className="w-full bg-orange hover:bg-hoverOrange"
               >
