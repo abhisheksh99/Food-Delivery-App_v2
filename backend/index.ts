@@ -3,6 +3,7 @@ import dotenv from "dotenv";
 import cors from "cors";
 import cookieParser from "cookie-parser";
 import connectDb from "./db/connectDb";
+import userRoutes from "./routes/userRoute";
 
 // Load environment variables
 dotenv.config();
@@ -23,6 +24,10 @@ app.use(
     credentials: true,
   })
 );
+
+// Routes
+app.use("/api/v1/user", userRoutes);
+
 
 // Server
 const PORT = process.env.PORT || 3000;
