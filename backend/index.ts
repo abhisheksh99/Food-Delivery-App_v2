@@ -3,10 +3,11 @@ import dotenv from "dotenv";
 import cors from "cors";
 import cookieParser from "cookie-parser";
 import connectDb from "./db/connectDb";
-
 import bodyParser from "body-parser";
 import userRoutes from "./routes/userRoute";
 import restaurantRoutes from "./routes/restaurantRoute";
+import menuRoutes from "./routes/menuRoute";
+import orderRoutes from "./routes/orderRoute";
 
 // Load environment variables
 dotenv.config();
@@ -32,6 +33,8 @@ app.use(
 // Routes
 app.use("/api/v1/user", userRoutes);
 app.use("/api/v1/restaurant", restaurantRoutes);
+app.use("/api/v1/menu", menuRoutes);
+app.use("/api/v1/order", orderRoutes);
 
 // Server
 const PORT = process.env.PORT || 3000;
