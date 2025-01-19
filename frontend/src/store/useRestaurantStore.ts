@@ -8,8 +8,8 @@ axios.defaults.withCredentials = true;
 
 export const useRestaurantStore = create(
   persist(
-    (set) => ({
-      restaurants: [],
+    (set,get) => ({
+      restaurant: null,
       isLoading: false,
       searchedRestaurant:null,
 
@@ -102,9 +102,34 @@ export const useRestaurantStore = create(
         }
       },
       // Add a menu item to a restaurant Api implementation
-      addMenu: async() =>{
+      addMenuToRestaurant: async(menu:any) =>{
+        set((state) => ({
+          restaurant: state.restaurant
+            ? {
+                ...state.restaurant,
+                menus: [...state.restaurant.menus, menu],
+              }
+            : null,
+        }));
 
-      }
+      },
+      // Update a menu item Api implementation
+      updateMenuToRestaurant: (updatedMenu:any) => {
+        set((state) => {
+          if (state.restaurant) {
+            const updatedMenus = state.restaurant.menus.map((menu) =>
+              menu._id === updatedMenu._id ? updatedMenu : menu
+            );
+            return {
+              restaurant: {
+                ...state.restaurant,
+                menus: updatedMenus,
+              },
+            };
+          }
+          return state;
+        });
+      },
     }),
     {
       name: "Restaurant",

@@ -1,3 +1,4 @@
+import React, { useState } from "react";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -12,26 +13,11 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { MenuFormSchema, menuSchema } from "@/schema/menuSchema";
 import { Loader2, Plus } from "lucide-react";
-import { useState } from "react";
 import EditMenu from "./EditMenu";
+import { useMenuStore } from "@/store/useMenuStore";
+import { useRestaurantStore } from "@/store/useRestaurantStore";
 
 const AddMenu = () => {
-  const menus = [
-    {
-      title: "Biryani",
-      description: "Delicious rice dish with spices and chicken.",
-      price: 80,
-      image: "",
-    },
-    {
-      title: "Pasta",
-      description: "Italian pasta with creamy sauce.",
-      price: 50,
-      image: "",
-    },
-  ];
-
-  const loading = false;
   const [input, setInput] = useState<MenuFormSchema>({
     name: "",
     description: "",
@@ -40,14 +26,17 @@ const AddMenu = () => {
   });
 
   const [open, setOpen] = useState<boolean>(false);
-  const [error, setError] = useState<Partial<MenuFormSchema>>({});
-  const [selectedMenu, setSelectedMenu] = useState<any>();
   const [editOpen, setEditOpen] = useState<boolean>(false);
+  const [selectedMenu, setSelectedMenu] = useState<any>();
+  const [error, setError] = useState<Partial<MenuFormSchema>>({});
 
   const changeEventHandler = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value, type } = e.target;
     setInput({ ...input, [name]: type === "number" ? Number(value) : value });
   };
+
+  const { isLoading, createMenu } = useMenuStore();
+  const {restaurant} = useRestaurantStore();
 
   const submitHandler = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -56,6 +45,19 @@ const AddMenu = () => {
       const fieldErrors = result.error.formErrors.fieldErrors;
       setError(fieldErrors as Partial<MenuFormSchema>);
       return;
+    }
+    // Add menu api integration
+    try {
+      const formData = new FormData();
+      formData.append("name", input.name);
+      formData.append("description", input.description);
+      formData.append("price", input.price.toString());
+      if (input.image) {
+        formData.append("image", input.image);
+      }
+      await createMenu(formData);
+    } catch (error) {
+      console.log(error);
     }
   };
 
@@ -139,12 +141,12 @@ const AddMenu = () => {
                 />
                 {error.image && (
                   <span className="text-xs font-medium text-red-600">
-                    {error.image}
+                    {error.image.name}
                   </span>
                 )}
               </div>
               <DialogFooter className="mt-5">
-                {loading ? (
+                {isLoading ? (
                   <Button disabled className="bg-orange hover:bg-hoverOrange">
                     <Loader2 className="mr-2 w-4 h-4 animate-spin" />
                     Please wait
@@ -160,20 +162,24 @@ const AddMenu = () => {
         </Dialog>
       </div>
       <div className="mt-6 space-y-4">
-        {menus.map((menu, idx) => (
+        {restaurant?.menus.map((menu:any) => (
           <div
-            key={idx}
+            key={menu.id}
             className="flex flex-col md:flex-row md:items-center md:space-x-4 md:p-4 p-2 shadow-md rounded-lg border"
           >
             <img
-              src={menu.image || ""}
-              alt={menu.title}
+              src={menu.image}
+              alt={menu.name}
               className="md:h-24 md:w-24 h-16 w-full object-cover rounded-lg"
             />
-            <div className="flex flex-col space-y-2">
-              <h2 className="font-bold">{menu.title}</h2>
-              <p>{menu.description}</p>
-              <h2 className="font-medium">${menu.price}</h2>
+            <div className="flex-1">
+              <h1 className="text-lg font-semibold text-gray-800">
+                {menu.name}
+              </h1>
+              <p className="text-sm text-gray-600 mt-1">{menu.description}</p>
+              <h2 className="text-md font-semibold mt-2">
+                Price: <span className="text-[#D19254]">${menu.price}</span>
+              </h2>
             </div>
             <Button
               onClick={() => {
@@ -193,7 +199,6 @@ const AddMenu = () => {
         editOpen={editOpen}
         setEditOpen={setEditOpen}
       />
-      
     </div>
   );
 };
