@@ -3,6 +3,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
 import { SignupInputState, userSignupSchema } from "@/schema/userSchema";
+import { useUserStore } from "@/store/useUserStore";
 import { Loader2, Lock, Mail, User, Phone } from "lucide-react";
 import { FormEvent, ChangeEvent, useState } from "react";
 import { Link } from "react-router-dom";
@@ -21,7 +22,9 @@ const Signup = () => {
     setInput({ ...input, [name]: value });
   };
 
-  const signupSubmitHandler = (e: FormEvent) => {
+  const { signup, isLoading } = useUserStore();
+
+  const signupSubmitHandler = async (e: FormEvent) => {
     e.preventDefault();
 
     // Form validation using Zod
@@ -32,14 +35,12 @@ const Signup = () => {
       return;
     }
 
-    // Clear errors on successful validation
-    setErrors({});
+    // Api implementation
+    await signup(input);
 
     // API Implementation Placeholder
     console.log("Validated Input:", input);
   };
-
-  const loading = false;
 
   return (
     <div className="flex items-center justify-center min-h-screen">
@@ -129,7 +130,7 @@ const Signup = () => {
 
         {/* Submit Button */}
         <div className="mb-10">
-          {loading ? (
+          {isLoading ? (
             <Button
               disabled
               type="submit"
