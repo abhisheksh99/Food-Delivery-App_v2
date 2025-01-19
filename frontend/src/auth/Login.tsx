@@ -3,15 +3,20 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
 import { LoginInputState, userLoginSchema } from "@/schema/userSchema";
+import { useUserStore } from "@/store/useUserStore";
 import { Loader2, Lock, Mail } from "lucide-react";
 import { FormEvent, ChangeEvent, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 const Login = () => {
   const [input, setInput] = useState<LoginInputState>({
     email: "",
     password: "",
   });
+  const navigate= useNavigate();
+
+  const {login,isLoading} = useUserStore();
+
 
   const [errors, setErrors] = useState<Partial<LoginInputState>>({});
 
@@ -20,7 +25,7 @@ const Login = () => {
     setInput({ ...input, [name]: value });
   };
 
-  const loginSubmitHandler = (e: FormEvent) => {
+  const loginSubmitHandler = async(e: FormEvent) => {
     e.preventDefault();
 
     // Form validation logic using Zod
@@ -31,14 +36,11 @@ const Login = () => {
       return;
     }
 
-    // Clear errors on successful validation
-    setErrors({});
-
-    // Placeholder for API logic
-    console.log("Validated Input:", input);
+    //Api Implementation
+    await login(input)
+    navigate("/")
   };
 
-  const loading = false;
 
   return (
     <div className="flex items-center justify-center min-h-screen">
@@ -90,7 +92,7 @@ const Login = () => {
 
         {/* Submit Button */}
         <div className="mb-10">
-          {loading ? (
+          {isLoading ? (
             <Button
               disabled
               type="submit"

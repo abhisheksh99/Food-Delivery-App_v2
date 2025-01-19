@@ -6,7 +6,7 @@ import { SignupInputState, userSignupSchema } from "@/schema/userSchema";
 import { useUserStore } from "@/store/useUserStore";
 import { Loader2, Lock, Mail, User, Phone } from "lucide-react";
 import { FormEvent, ChangeEvent, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 const Signup = () => {
   const [input, setInput] = useState<SignupInputState>({
@@ -16,6 +16,7 @@ const Signup = () => {
     contact: "",
   });
   const [errors, setErrors] = useState<Partial<SignupInputState>>({});
+  const navigate = useNavigate();
 
   const changeEventHandler = (e: ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -35,11 +36,9 @@ const Signup = () => {
       return;
     }
 
-    // Api implementation
+    // Signup Api implementation
     await signup(input);
-
-    // API Implementation Placeholder
-    console.log("Validated Input:", input);
+    navigate("/login")
   };
 
   return (
