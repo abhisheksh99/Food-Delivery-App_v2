@@ -215,7 +215,7 @@ export const useUserStore = create<UserState>()(
             },
         }),
         {
-            name: "user",
+            name: "User",
             storage: createJSONStorage(() => localStorage),
         }
     )

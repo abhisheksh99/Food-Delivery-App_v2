@@ -3,12 +3,12 @@ import { Input } from "@/components/ui/input";
 import { useUserStore } from "@/store/useUserStore";
 import { Loader2 } from "lucide-react";
 import { useRef, useState, FormEvent } from "react";
-
+import { useNavigate } from "react-router-dom";
 
 const VerifyEmail = () => {
   const [otp, setOtp] = useState<string[]>(["", "", "", "", "", ""]);
   const inputRef = useRef<HTMLInputElement[]>([]);
-
+  const navigate = useNavigate();
 
   const handleChange = (index: number, value: string) => {
     if (/^[a-zA-Z0-9]$/.test(value) || value === "") {
@@ -31,15 +31,19 @@ const VerifyEmail = () => {
     }
   };
 
-  const {verifyEmail,isLoading} = useUserStore();
+  const { verifyEmail, isLoading } = useUserStore();
 
   const submitHandler = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     console.log("Submitted OTP:", otp.join(""));
     // Add your verify API call or further logic here
-    const verificationCode:string = otp.join("");
-    await verifyEmail(verificationCode)
-
+    const verificationCode: string = otp.join("");
+    try {
+      await verifyEmail(verificationCode);
+      navigate("/");
+    } catch (error) {
+      console.log(error);
+    }
   };
 
   return (

@@ -5,6 +5,7 @@ import {
   RestaurantFormSchema,
   restaurantFromSchema,
 } from "@/schema/restaurantSchema";
+import { useRestaurantStore } from "@/store/useRestaurant";
 import { Loader2 } from "lucide-react";
 import { FormEvent, useState } from "react";
 
@@ -15,12 +16,11 @@ const Restaurant = () => {
     country: "",
     deliveryTime: 0,
     cuisines: [],
-    imageFile: undefined,
+    imageFile: undefined,  // This should just be 'File | undefined' and won't be directly rendered
   });
   const [errors, setErrors] = useState<Partial<RestaurantFormSchema>>({});
 
-  const loading = false;
-  const restaurant = false;
+  const {restaurant, createRestaurant, isLoading, updateRestaurant} = useRestaurantStore();
 
   const changeEventHandler = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value, type } = e.target;
@@ -34,6 +34,28 @@ const Restaurant = () => {
       const fieldErrors = result.error.formErrors.fieldErrors;
       setErrors(fieldErrors as Partial<RestaurantFormSchema>);
       return;
+    }
+
+    // Api implementation
+    try {
+      const formData = new FormData();
+      formData.append("restaurantName", input.restaurantName);
+      formData.append("city", input.city);
+      formData.append("country", input.country);
+      formData.append("deliveryTime", input.deliveryTime.toString());
+      formData.append("cuisines", JSON.stringify(input.cuisines));
+
+      if (input.imageFile) {
+        formData.append("imageFile", input.imageFile);
+      }
+
+      if(restaurant){
+        updateRestaurant(formData);
+      } else {
+        await createRestaurant(formData);
+      }
+    } catch (error) {
+      console.log(error);
     }
 
     console.log("Submitted Data:", input);
@@ -141,7 +163,7 @@ const Restaurant = () => {
               onChange={(e) =>
                 setInput({
                   ...input,
-                  imageFile: e.target.files?.[0] || undefined,
+                  imageFile: e.target.files?.[0] || undefined,  // Ensure 'imageFile' is only set to File or undefined
                 })
               }
               type="file"
@@ -157,7 +179,7 @@ const Restaurant = () => {
 
           {/* Submit Button */}
           <div className="my-5 w-fit">
-            {loading ? (
+            {isLoading ? (
               <Button disabled className="bg-orange hover:bg-hoverOrange">
                 <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                 Please wait
