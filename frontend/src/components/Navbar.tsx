@@ -37,10 +37,11 @@ import {
   SheetClose,
 } from "@/components/ui/sheet";
 import { Separator } from "@/components/ui/separator";
+import { useUserStore } from "@/store/useUserStore";
 
 const Navbar = () => {
-  const admin = true;
-  const loading = false;
+  const { user, isLoading, logout } = useUserStore();
+
   return (
     <div className="max-w-7xl mx-auto">
       <div className="flex items-center justify-between h-14">
@@ -55,7 +56,7 @@ const Navbar = () => {
             <Link to="/profile">Profile</Link>
             <Link to="/order/status">Order</Link>
 
-            {admin && (
+            {user?.admin && (
               <Menubar>
                 <MenubarMenu>
                   <MenubarTrigger>Dashboard</MenubarTrigger>
@@ -106,13 +107,13 @@ const Navbar = () => {
               </Avatar>
             </div>
             <div>
-              {loading ? (
+              {isLoading ? (
                 <Button className="bg-orange hover:bg-hoverOrange">
                   <Loader2 className="animate spin h-4 w-4 mr-2" />
                   Please wait
                 </Button>
               ) : (
-                <Button className="bg-orange hover:bg-hoverOrange">
+                <Button onClick ={logout} className="bg-orange hover:bg-hoverOrange">
                   Logout
                 </Button>
               )}
@@ -128,12 +129,7 @@ const Navbar = () => {
 };
 
 const MobileNavbar = () => {
-  const user = {
-    admin: true,
-    profilePicture: null,
-  };
-  const isLoading = false;
-  const logout = () => console.log("Logout clicked");
+  const {user,isLoading,logout} = useUserStore();
 
   return (
     <Sheet>
