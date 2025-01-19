@@ -11,16 +11,20 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { MenuFormSchema, menuSchema } from "@/schema/menuSchema";
 import { useMenuStore } from "@/store/useMenuStore";
-
 import { Loader2 } from "lucide-react";
 import { useEffect, useState } from "react";
+
+
+interface ExistingMenu extends MenuFormSchema {
+  _id: string;
+}
 
 const EditMenu = ({
   selectedMenu,
   editOpen,
   setEditOpen,
 }: {
-  selectedMenu: MenuFormSchema;
+  selectedMenu: ExistingMenu;  // Updated type here
   editOpen: boolean;
   setEditOpen: React.Dispatch<React.SetStateAction<boolean>>;
 }) => {
@@ -31,7 +35,17 @@ const EditMenu = ({
     image: undefined,
   });
   const [error, setError] = useState<Partial<MenuFormSchema>>({});
-  const { isLoading, editMenu } = useMenuStore();
+
+  useEffect(() => {
+    if (selectedMenu) {
+      setInput({
+        name: selectedMenu.name || "",
+        description: selectedMenu.description || "",
+        price: selectedMenu.price || 0,
+        image: undefined,
+      });
+    }
+  }, [selectedMenu]);
 
   const changeEventHandler = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value, type } = e.target;
@@ -40,6 +54,7 @@ const EditMenu = ({
       [name]: type === "number" ? Number(value) : value,
     }));
   };
+  const { isLoading, editMenu } = useMenuStore();
 
   const submitHandler = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -63,17 +78,6 @@ const EditMenu = ({
       console.log(error);
     }
   };
-  // Populate input fields when selectedMenu changes
-  useEffect(() => {
-    if (selectedMenu) {
-      setInput({
-        name: selectedMenu.name || "",
-        description: selectedMenu.description || "",
-        price: selectedMenu.price || 0,
-        image: undefined, // Image needs to be uploaded separately
-      });
-    }
-  }, [selectedMenu]);
 
   return (
     <Dialog open={editOpen} onOpenChange={setEditOpen}>
@@ -151,14 +155,11 @@ const EditMenu = ({
           <DialogFooter className="mt-5">
             {isLoading ? (
               <Button disabled className="bg-orange hover:bg-hoverOrange">
-                <Loader2 className="mr-2 w-4 h-4 animate-spin " />
+                <Loader2 className="mr-2 w-4 h-4 animate-spin" />
                 Please wait
               </Button>
             ) : (
-              <Button
-                className="bg-orange hover:bg-hoverOrange w-full"
-                type="submit"
-              >
+              <Button className="bg-orange hover:bg-hoverOrange w-full" type="submit">
                 Submit
               </Button>
             )}

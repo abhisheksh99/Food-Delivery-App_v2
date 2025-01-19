@@ -16,7 +16,7 @@ const Restaurant = () => {
     country: "",
     deliveryTime: 0,
     cuisines: [],
-    imageFile: undefined,  // This should just be 'File | undefined' and won't be directly rendered
+    imageFile: undefined as File | undefined,  // This should just be 'File | undefined' and won't be directly rendered
   });
   const [errors, setErrors] = useState<Partial<RestaurantFormSchema>>({});
 
@@ -190,7 +190,7 @@ const Restaurant = () => {
             />
             {errors?.imageFile && (
               <span className="text-xs text-red-600 font-medium">
-                {errors.imageFile}
+                {String(errors.imageFile)}
               </span>
             )}
           </div>

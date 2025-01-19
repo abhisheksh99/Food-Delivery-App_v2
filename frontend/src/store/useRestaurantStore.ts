@@ -1,19 +1,26 @@
+import axios from "axios";
 import { create } from "zustand";
 import { createJSONStorage, persist } from "zustand/middleware";
-import axios from "axios";
 import { toast } from "sonner";
+import { MenuItem, RestaurantState } from "@/types/restaurantType";
+
+
 
 const API_ENDPOINT = "http://localhost:3000/api/v1/restaurant";
 axios.defaults.withCredentials = true;
 
-export const useRestaurantStore = create(
+export const useRestaurantStore = create<RestaurantState>()(
   persist(
-    (set,get) => ({
-      restaurant: null,
+    (set) => ({
+      // Define all required state properties
       isLoading: false,
-      searchedRestaurant:null,
+      restaurant: null,
+      searchedRestaurant: null,
+      appliedFilter: [],
+      singleRestaurant: null,
+      restaurantOrder: [],
 
-      // Create Restaurant Api implementation
+      // Action: Create a restaurant
       createRestaurant: async (formData: FormData) => {
         try {
           set({ isLoading: true });
@@ -34,7 +41,7 @@ export const useRestaurantStore = create(
         }
       },
 
-      // Get Restaurant Api implementation
+      // Action: Get all restaurants
       getRestaurant: async () => {
         try {
           set({ isLoading: true });
@@ -52,7 +59,7 @@ export const useRestaurantStore = create(
         }
       },
 
-      //  Update a restaurant APi implemetation
+      // Action: Update a restaurant
       updateRestaurant: async (formData: FormData) => {
         try {
           set({ isLoading: true });
@@ -63,7 +70,6 @@ export const useRestaurantStore = create(
           });
           if (response.data.success) {
             toast.success(response.data.message);
-            set({ isLoading: false });
           }
         } catch (error: any) {
           toast.error(
@@ -74,7 +80,7 @@ export const useRestaurantStore = create(
         }
       },
 
-      // Search Restaurant Api implememtaion
+      // Action: Search for restaurants
       searchRestaurant: async (
         searchText: string,
         searchQuery: string,
@@ -89,9 +95,7 @@ export const useRestaurantStore = create(
           const response = await axios.get(
             `${API_ENDPOINT}/search/${searchText}?${params.toString()}`
           );
-          console.log(
-            `Requesting: ${API_ENDPOINT}/search/${searchText}?${params.toString()}`
-          );
+          console.log(`Requesting: ${API_ENDPOINT}/search/${searchText}?${params.toString()}`);
           if (response.data.success) {
             set({ searchedRestaurant: response.data });
           }
@@ -101,8 +105,9 @@ export const useRestaurantStore = create(
           set({ isLoading: false });
         }
       },
-      // Add a menu item to a restaurant Api implementation
-      addMenuToRestaurant: async(menu:any) =>{
+
+      // Action: Add a menu item to a restaurant
+      addMenuToRestaurant: (menu: MenuItem) => {
         set((state) => ({
           restaurant: state.restaurant
             ? {
@@ -111,10 +116,10 @@ export const useRestaurantStore = create(
               }
             : null,
         }));
-
       },
-      // Update a menu item Api implementation
-      updateMenuToRestaurant: (updatedMenu:any) => {
+
+      // Action: Update a menu item in a restaurant
+      updateMenuToRestaurant: (updatedMenu: MenuItem) => {
         set((state) => {
           if (state.restaurant) {
             const updatedMenus = state.restaurant.menus.map((menu) =>
@@ -129,6 +134,38 @@ export const useRestaurantStore = create(
           }
           return state;
         });
+      },
+
+      // Action: Set applied filter
+      setAppliedFilter: (value: string) => {
+        set((state) => {
+          const isAlreadyApplied = state.appliedFilter.includes(value);
+          const updatedFilter = isAlreadyApplied
+            ? state.appliedFilter.filter((item) => item !== value)
+            : [...state.appliedFilter, value];
+          return { appliedFilter: updatedFilter };
+        });
+      },
+
+      // Action: Reset applied filter
+      resetAppliedFilter: () => {
+        set({ appliedFilter: [] });
+      },
+
+      // Action: Get single restaurant details
+      getSingleRestaurant: async (restaurantId: string) => {
+        try {
+          set({ isLoading: true });
+          const response = await axios.get(`${API_ENDPOINT}/${restaurantId}`);
+          if (response.data.success) {
+            set({ singleRestaurant: response.data.restaurant });
+          }
+        } catch (error) {
+          console.error(error);
+          toast.error("Failed to fetch restaurant details.");
+        } finally {
+          set({ isLoading: false });
+        }
       },
     }),
     {
