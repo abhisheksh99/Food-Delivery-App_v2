@@ -7,7 +7,7 @@ import {
 } from "@/schema/restaurantSchema";
 import { useRestaurantStore } from "@/store/useRestaurant";
 import { Loader2 } from "lucide-react";
-import { FormEvent, useState } from "react";
+import { FormEvent, useEffect, useState } from "react";
 
 const Restaurant = () => {
   const [input, setInput] = useState<RestaurantFormSchema>({
@@ -20,7 +20,7 @@ const Restaurant = () => {
   });
   const [errors, setErrors] = useState<Partial<RestaurantFormSchema>>({});
 
-  const {restaurant, createRestaurant, isLoading, updateRestaurant} = useRestaurantStore();
+  const {restaurant, createRestaurant, isLoading, updateRestaurant,getRestaurant} = useRestaurantStore();
 
   const changeEventHandler = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value, type } = e.target;
@@ -61,6 +61,24 @@ const Restaurant = () => {
     console.log("Submitted Data:", input);
   };
 
+  useEffect(() => {
+    const fetchRestaurant = async () => {
+      await getRestaurant();
+      if (restaurant) {
+        setInput({
+          restaurantName: restaurant.restaurantName || "",
+          city: restaurant.city || "",
+          country: restaurant.country || "",
+          deliveryTime: restaurant.deliveryTime || 0,
+          cuisines: restaurant.cuisines
+            ? restaurant.cuisines.map((cuisine: string) => cuisine)
+            : [],
+          imageFile: undefined,
+        });
+      }
+    };
+    fetchRestaurant();
+  }, []);
   return (
     <div className="max-w-6xl mx-auto my-10">
       <h1 className="font-extrabold text-2xl mb-5">Add Restaurants</h1>
