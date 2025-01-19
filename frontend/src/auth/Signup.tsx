@@ -37,8 +37,12 @@ const Signup = () => {
     }
 
     // Signup Api implementation
-    await signup(input);
-    navigate("/login")
+    try {
+      await signup(input);
+      navigate("/verify-email");
+    } catch (error) {
+      console.log(error);
+    }
   };
 
   return (

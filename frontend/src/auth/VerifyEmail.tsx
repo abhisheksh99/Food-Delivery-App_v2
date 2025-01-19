@@ -1,5 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { useUserStore } from "@/store/useUserStore";
 import { Loader2 } from "lucide-react";
 import { useRef, useState, FormEvent } from "react";
 
@@ -7,7 +8,6 @@ import { useRef, useState, FormEvent } from "react";
 const VerifyEmail = () => {
   const [otp, setOtp] = useState<string[]>(["", "", "", "", "", ""]);
   const inputRef = useRef<HTMLInputElement[]>([]);
-  const isLoading=false
 
 
   const handleChange = (index: number, value: string) => {
@@ -31,12 +31,14 @@ const VerifyEmail = () => {
     }
   };
 
+  const {verifyEmail,isLoading} = useUserStore();
 
   const submitHandler = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     console.log("Submitted OTP:", otp.join(""));
     // Add your verify API call or further logic here
-  
+    const verificationCode:string = otp.join("");
+    await verifyEmail(verificationCode)
 
   };
 

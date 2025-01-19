@@ -37,8 +37,12 @@ const Login = () => {
     }
 
     //Api Implementation
-    await login(input)
-    navigate("/")
+    try {
+      await login(input);
+      navigate("/");
+    } catch (error) {
+      console.log(error);
+    }
   };
 
 

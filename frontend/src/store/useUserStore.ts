@@ -26,6 +26,7 @@ type UserState = {
   isLoading: boolean;
   signup: (input: SignupInputState) => Promise<void>;
   login: (input: LoginInputState) => Promise<void>;
+  verifyEmail: (verificationCode: string) => Promise<void>;
 };
 
 export const useUserStore = create<UserState>()(
@@ -60,7 +61,7 @@ export const useUserStore = create<UserState>()(
         }
       },
 
-      // Login Api implementation
+      // Login API implementation
       login: async (input: LoginInputState) => {
         try {
           set({ isLoading: true });
@@ -78,7 +79,35 @@ export const useUserStore = create<UserState>()(
             });
           }
         } catch (error: any) {
-          toast.error(error.response?.data?.message || "Signup failed.");
+          toast.error(error.response?.data?.message || "Login failed.");
+          set({ isLoading: false });
+        }
+      },
+
+      // verifyEmail API implementation
+      verifyEmail: async (verificationCode: string) => {
+        try {
+          set({ isLoading: true });
+          const response = await axios.post(
+            `${API_ENDPOINT}/verify-email`,
+            { verificationCode },
+            {
+              headers: {
+                "Content-Type": "application/json",
+              },
+            }
+          );
+
+          if (response.data.success) {
+            toast.success(response.data.message);
+            set({
+              isLoading: false,
+              user: response.data.user,
+              isAuthenticated: true,
+            });
+          }
+        } catch (error: any) {
+          toast.error(error.response?.data?.message || "Verification failed.");
           set({ isLoading: false });
         }
       },
