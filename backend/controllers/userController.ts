@@ -116,6 +116,7 @@ export const login = async (req: Request, res: Response) => {
 export const verifyEmail = async (req: Request, res: Response) => {
   try {
     const { verificationCode } = req.body;
+    
 
     // Find the user with the provided verification token
     const user = await User.findOne({
