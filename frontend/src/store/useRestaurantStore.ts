@@ -3,15 +3,14 @@ import { create } from "zustand";
 import { createJSONStorage, persist } from "zustand/middleware";
 import { toast } from "sonner";
 import { MenuItem, RestaurantState } from "@/types/restaurantType";
-
-
+import { Orders } from "@/types/orderType";
 
 const API_ENDPOINT = "http://localhost:3000/api/v1/restaurant";
 axios.defaults.withCredentials = true;
 
 export const useRestaurantStore = create<RestaurantState>()(
   persist(
-    (set) => ({
+    (set, get) => ({
       // Define all required state properties
       isLoading: false,
       restaurant: null,
@@ -155,21 +154,55 @@ export const useRestaurantStore = create<RestaurantState>()(
       // Action: Get single restaurant details
       getSingleRestaurant: async (restaurantId: string) => {
         try {
-          set({ isLoading: true });
           const response = await axios.get(`${API_ENDPOINT}/${restaurantId}`);
           if (response.data.success) {
             set({ singleRestaurant: response.data.restaurant });
           }
         } catch (error) {
           console.error(error);
-          toast.error("Failed to fetch restaurant details.");
-        } finally {
-          set({ isLoading: false });
+        }
+      },
+
+      // Action: Get restaurant orders
+      getRestaurantOrders: async () => {
+        try {
+          const response = await axios.get(`${API_ENDPOINT}/order`);
+          if (response.data.success) {
+            set({ restaurantOrder: response.data.orders });
+          }
+        } catch (error) {
+          console.log(error);
+        }
+      },
+
+      // Action: Update restaurant order
+      updateRestaurantOrder: async (orderId: string, status: string) => {
+        try {
+          const response = await axios.put(
+            `${API_ENDPOINT}/order/${orderId}/status`,
+            { status },
+            {
+              headers: {
+                "Content-Type": "application/json",
+              },
+            }
+          );
+          if (response.data.success) {
+            const updatedOrder = get().restaurantOrder.map((order: Orders) =>
+              order._id === orderId
+                ? { ...order, status: response.data.status }
+                : order
+            );
+            set({ restaurantOrder: updatedOrder });
+            toast.success(response.data.message);
+          }
+        } catch (error: any) {
+          toast.error(error.response?.data?.message || "Failed to update order.");
         }
       },
     }),
     {
-      name: "Restaurant",
+      name: "restaurant",
       storage: createJSONStorage(() => localStorage),
     }
   )
