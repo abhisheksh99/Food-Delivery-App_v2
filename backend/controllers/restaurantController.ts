@@ -69,6 +69,7 @@ export const getRestaurant = async (req: Request, res: Response) => {
     }
 };
 
+
 // Controller to update restaurant details
 export const updateRestaurant = async (req: Request, res: Response) => {
     try {
