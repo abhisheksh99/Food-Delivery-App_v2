@@ -1,16 +1,20 @@
-import { Dispatch, SetStateAction, useState, FormEvent } from "react";
+import { Dispatch, FormEvent, SetStateAction, useState } from "react";
 import {
   Dialog,
   DialogContent,
   DialogDescription,
   DialogFooter,
-  DialogTitle,
 } from "./ui/dialog";
+import { DialogTitle } from "@radix-ui/react-dialog";
 import { Label } from "./ui/label";
 import { Input } from "./ui/input";
 import { Button } from "./ui/button";
-import { Loader2 } from "lucide-react";
 import { useUserStore } from "@/store/useUserStore";
+import { CheckoutSessionRequest } from "@/types/orderType";
+import { useCartStore } from "@/store/useCartStore";
+import { useRestaurantStore } from "@/store/useRestaurantStore";
+import { useOrderStore } from "@/store/useOrderStore";
+import { Loader2 } from "lucide-react";
 
 const CheckoutConfirmPage = ({
   open,
@@ -28,17 +32,32 @@ const CheckoutConfirmPage = ({
     city: user?.city || "",
     country: user?.country || "",
   });
-
-  const isLoading=false;
-
+  const { cart } = useCartStore();
+  const { restaurant } = useRestaurantStore();
+  const { createCheckoutSession, isLoading } = useOrderStore();
   const changeEventHandler = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setInput({ ...input, [name]: value });
   };
-
   const checkoutHandler = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    console.log(input);
+    // api implementation start from here
+    try {
+      const checkoutData: CheckoutSessionRequest = {
+        cartItems: cart.map((cartItem) => ({
+          menuId: cartItem._id,
+          name: cartItem.name,
+          image: cartItem.image,
+          price: cartItem.price.toString(),
+          quantity: cartItem.quantity.toString(),
+        })),
+        deliveryDetails: input,
+        restaurantId: restaurant?._id as string,
+      };
+      await createCheckoutSession(checkoutData);
+    } catch (error) {
+      console.log(error);
+    }
   };
 
   return (
