@@ -46,7 +46,7 @@ const Orders = () => {
               </p>
             </div>
             <div className="w-full sm:w-1/3">
-              <Label className="block text-sm font-medium text-gray-700 dark:text-gray300 mb-2">
+              <Label className="block text-sm font-medium text-white dark:text-gray300 mb-2">
                 Order Status
               </Label>
               <Select

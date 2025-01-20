@@ -17,6 +17,7 @@ import Order from "./components/Order";
 import { useUserStore } from "./store/useUserStore";
 import Loading from "./components/Loading";
 import { useEffect } from "react";
+import { useThemeStore } from "./store/useThemeStore";
 
 const ProtectedRoutes = ({ children }: { children: React.ReactNode }) => {
   const { isAuthenticated, user , isCheckingAuth} = useUserStore();
@@ -57,10 +58,12 @@ const AdminRoute = ({ children }: { children: React.ReactNode }) => {
 };
 
 function App() {
+  const initializeTheme = useThemeStore((state:any) => state.initializeTheme);
   const { checkAuthentication, isCheckingAuth } = useUserStore();
 
   useEffect(() => {
     checkAuthentication();
+    initializeTheme();
   }, [checkAuthentication]);
 
   if (isCheckingAuth) return <Loading />;
