@@ -3,7 +3,8 @@
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
-    "start": "nodemon --exec ts-node index.ts"
+    "start": "nodemon --exec ts-node index.ts",
+    "stripe":"stripe listen --forward-to localhost:3000/api/v1/order/webhook"
   },
   "keywords": [],
   "author": "Abhishek Sharma",
