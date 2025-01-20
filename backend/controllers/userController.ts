@@ -9,7 +9,7 @@ import {
   sendResetSuccessEmail,
   sendVerificationEmail,
   sendWelcomeEmail,
-} from "../mailtrap/email";
+} from "../sendGrid/email";
 import { generateVerificationCode } from "../utils/generateVerificationToken";
 
 // Controller for user signup
