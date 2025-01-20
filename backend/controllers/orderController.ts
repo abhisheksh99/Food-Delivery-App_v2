@@ -99,32 +99,40 @@ export const stripeWebhook = async (req: Request, res: Response) => {
   let event;
   try {
     const signature = req.headers["stripe-signature"];
-    const payloadString = JSON.stringify(req.body, null, 2);
+    
+    // Important: Use the raw request body, not JSON.stringify
+    const payload = req.body;
     const secret = process.env.WEBHOOK_ENDPOINT_SECRET!;
-    event = stripe.webhooks.constructEvent(payloadString, signature as string, secret);
+    
+    // Construct event from raw body
+    event = stripe.webhooks.constructEvent(payload, signature as string, secret);
+    
+    if (event.type === "checkout.session.completed") {
+      try {
+        const session = event.data.object as Stripe.Checkout.Session;
+        const order = await Order.findById(session.metadata?.orderId);
+        
+        if (!order) {
+          return res.status(404).json({ message: "Order not found" });
+        }
+        
+        if (session.amount_total) {
+          order.totalAmount = session.amount_total;
+        }
+        
+        order.status = "confirmed";
+        await order.save();
+      } catch (error) {
+        console.error("Error handling event:", error);
+        return res.status(500).json({ message: "Internal Server Error" });
+      }
+    }
+    
+    res.status(200).send();
   } catch (error: any) {
     console.error("Webhook error:", error.message);
     return res.status(400).send(`Webhook error: ${error.message}`);
   }
-
-  if (event.type === "checkout.session.completed") {
-    try {
-      const session = event.data.object as Stripe.Checkout.Session;
-      const order = await Order.findById(session.metadata?.orderId);
-      if (!order) {
-        return res.status(404).json({ message: "Order not found" });
-      }
-      if (session.amount_total) {
-        order.totalAmount = session.amount_total;
-      }
-      order.status = "confirmed";
-      await order.save();
-    } catch (error) {
-      console.error("Error handling event:", error);
-      return res.status(500).json({ message: "Internal Server Error" });
-    }
-  }
-  res.status(200).send();
 };
 
 export const createLineItems = async (
