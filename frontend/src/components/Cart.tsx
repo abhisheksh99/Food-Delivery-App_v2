@@ -1,16 +1,28 @@
 import { Button } from "./ui/button";
-import { Table, TableBody, TableCell, TableFooter, TableHead, TableHeader, TableRow } from "./ui/table";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableFooter,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "./ui/table";
 import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
 import { Minus, Plus } from "lucide-react";
 import { useState } from "react";
 import CheckoutConfirmPage from "./CheckoutConfirmPage";
+import { useCartStore } from "@/store/useCartStore";
+import { CartItem } from "@/types/cartType";
 
 const Cart = () => {
   const [open, setOpen] = useState<boolean>(false);
+  const { cart, decrementQuantity, incrementQuantity, clearCart, removeFromTheCart } = useCartStore();
+
   return (
     <div className="flex flex-col max-w-7xl mx-auto my-10">
       <div className="flex justify-end">
-        <Button variant="link">Clear All</Button>
+        <Button variant="link" onClick={clearCart}>Clear All</Button>
       </div>
       <Table>
         <TableHeader>
@@ -24,53 +36,63 @@ const Cart = () => {
           </TableRow>
         </TableHeader>
         <TableBody>
-          <TableRow>
-            <TableCell>
-              <Avatar>
-                <AvatarImage src={""} alt="" />
-                <AvatarFallback>CN</AvatarFallback>
-              </Avatar>
-            </TableCell>
-            <TableCell>name</TableCell>
-            <TableCell>price</TableCell>
-            <TableCell>
-              <div className="w-fit flex items-center rounded-full border border-gray-100 dark:border-gray-800 shadow-md">
+          {cart.map((item: CartItem) => (
+            <TableRow key={item._id}>
+              <TableCell>
+                <Avatar>
+                  <AvatarImage src={item?.image || ""} alt="profilePhoto" />
+                  <AvatarFallback>CN</AvatarFallback>
+                </Avatar>
+              </TableCell>
+              <TableCell>{item.name}</TableCell>
+              <TableCell>${item.price}</TableCell>
+              <TableCell>
+                <div className="w-fit flex items-center rounded-full border border-gray-100 dark:border-gray-800 shadow-md">
+                  <Button
+                    onClick={() => decrementQuantity(item._id)}
+                    size={"icon"}
+                    variant={"outline"}
+                    className="rounded-full bg-gray-200"
+                  >
+                    <Minus />
+                  </Button>
+                  <Button
+                    size={"icon"}
+                    className="font-bold border-none"
+                    disabled
+                    variant={"outline"}
+                  >
+                    {item.quantity}
+                  </Button>
+                  <Button
+                    onClick={() => incrementQuantity(item._id)}
+                    size={"icon"}
+                    className="rounded-full bg-orange hover:bg-hoverOrange"
+                    variant={"outline"}
+                  >
+                    <Plus />
+                  </Button>
+                </div>
+              </TableCell>
+              <TableCell>${item.quantity * item.price}</TableCell>
+              <TableCell className="text-right">
                 <Button
-                  size={"icon"}
-                  variant={"outline"}
-                  className="rounded-full bg-gray-200"
+                  onClick={() => removeFromTheCart(item._id)}
+                  size={"sm"}
+                  className="bg-orange hover:bg-hoverOrange"
                 >
-                  <Minus />
+                  Remove
                 </Button>
-                <Button
-                  size={"icon"}
-                  className="font-bold border-none"
-                  disabled
-                  variant={"outline"}
-                >
-                  10
-                </Button>
-                <Button
-                  size={"icon"}
-                  className="rounded-full bg-orange hover:bg-hoverOrange"
-                  variant={"outline"}
-                >
-                  <Plus />
-                </Button>
-              </div>
-            </TableCell>
-            <TableCell>10</TableCell>
-            <TableCell className="text-right">
-              <Button size={"sm"} className="bg-orange hover:bg-hoverOrange">
-                Remove
-              </Button>
-            </TableCell>
-          </TableRow>
+              </TableCell>
+            </TableRow>
+          ))}
         </TableBody>
         <TableFooter>
           <TableRow className="text-2xl font-bold">
-            <TableCell colSpan={5}>Total</TableCell>
-            <TableCell className="text-right">totalAmount</TableCell>
+            <TableCell colSpan={5}>Total Amount</TableCell>
+            <TableCell className="text-right">
+              ${cart.reduce((acc, item) => acc + item.price * item.quantity, 0)}
+            </TableCell>
           </TableRow>
         </TableFooter>
       </Table>

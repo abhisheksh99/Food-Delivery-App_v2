@@ -10,6 +10,7 @@ import { Label } from "./ui/label";
 import { Input } from "./ui/input";
 import { Button } from "./ui/button";
 import { Loader2 } from "lucide-react";
+import { useUserStore } from "@/store/useUserStore";
 
 const CheckoutConfirmPage = ({
   open,
@@ -18,13 +19,14 @@ const CheckoutConfirmPage = ({
   open: boolean;
   setOpen: Dispatch<SetStateAction<boolean>>;
 }) => {
+  const { user } = useUserStore();
   const [input, setInput] = useState({
-    name: "",
-    email: "",
-    contact: "",
-    address: "",
-    city: "",
-    country: "",
+    name: user?.fullname || "",
+    email: user?.email || "",
+    contact: user?.contact.toString() || "",
+    address: user?.address || "",
+    city: user?.city || "",
+    country: user?.country || "",
   });
 
   const isLoading=false;

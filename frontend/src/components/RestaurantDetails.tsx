@@ -5,9 +5,11 @@ import { useEffect } from "react";
 import { useParams } from "react-router-dom";
 import AvailableMenu from "./AvailableMenu ";
 
+
 const RestaurantDetail = () => {
   const params = useParams();
   const { singleRestaurant, getSingleRestaurant } = useRestaurantStore();
+ 
 
   useEffect(() => {
     getSingleRestaurant(params.id!); 

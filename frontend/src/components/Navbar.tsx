@@ -38,9 +38,11 @@ import {
 } from "@/components/ui/sheet";
 import { Separator } from "@/components/ui/separator";
 import { useUserStore } from "@/store/useUserStore";
+import { useCartStore } from "@/store/useCartStore";
 
 const Navbar = () => {
   const { user, isLoading, logout } = useUserStore();
+  const { cart } = useCartStore();
 
   return (
     <div className="max-w-7xl mx-auto">
@@ -93,16 +95,21 @@ const Navbar = () => {
             </div>
             <Link to="/cart" className="relative cursor-pointer">
               <ShoppingCart />
-              <Button
-                size={"icon"}
-                className="absolute -inset-y-3 left-2 text-xs rounded-full w-4 h-4 bg-red-500 hover:bg-red-500"
-              >
-                1
-              </Button>
+              {cart.length > 0 && (
+                <Button
+                  size={"icon"}
+                  className="absolute -inset-y-3 left-2 text-xs rounded-full w-4 h-4 bg-red-500 hover:bg-red-500"
+                >
+                  {cart.length}
+                </Button>
+              )}
             </Link>
             <div>
               <Avatar>
-                <AvatarImage src={""} alt="profilephoto" />
+                <AvatarImage
+                  src={user?.profilePicture || ""}
+                  alt="profilephoto"
+                />
                 <AvatarFallback>CN</AvatarFallback>
               </Avatar>
             </div>
@@ -113,7 +120,10 @@ const Navbar = () => {
                   Please wait
                 </Button>
               ) : (
-                <Button onClick ={logout} className="bg-orange hover:bg-hoverOrange">
+                <Button
+                  onClick={logout}
+                  className="bg-orange hover:bg-hoverOrange"
+                >
                   Logout
                 </Button>
               )}
@@ -129,7 +139,8 @@ const Navbar = () => {
 };
 
 const MobileNavbar = () => {
-  const {user,isLoading,logout} = useUserStore();
+  const { user, isLoading, logout } = useUserStore();
+  const { cart } = useCartStore();
 
   return (
     <Sheet>
@@ -180,7 +191,7 @@ const MobileNavbar = () => {
             className="flex items-center gap-4 hover:bg-gray-200 px-3 py-2 rounded-lg cursor-pointer hover:text-gray-900 font-medium"
           >
             <ShoppingCart />
-            <span>Cart (0)</span>
+            <span>Cart ({cart.length})</span>
           </Link>
           {user?.admin && (
             <>
@@ -211,10 +222,13 @@ const MobileNavbar = () => {
         <SheetFooter className="flex flex-col gap-4">
           <div className="flex flex-row items-center gap-2">
             <Avatar>
-              <AvatarImage src={""} />
+              <AvatarImage
+                src={user?.profilePicture || ""}
+                alt="profilePicture"
+              />
               <AvatarFallback>CN</AvatarFallback>
             </Avatar>
-            <h1 className="font-bold">Flavor Fiesta Admin</h1>
+            <h1 className="font-bold">{user?.fullname}</h1>
           </div>
           <SheetClose asChild>
             {isLoading ? (
